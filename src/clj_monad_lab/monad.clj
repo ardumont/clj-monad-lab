@@ -10,25 +10,18 @@
   [a]
   (when a {:value a}))
 
-(defn bind "(>>=) :: Monad m => m a -> (a -> m b) -> m b"
-  [{:keys [value] :as monad-value} a->b]
+(defn >>= "Monad m => m a -> (a -> m b) -> m b"
+  [{:keys [value] :as monad-value} a->mb]
   (when monad-value
-    (-> value
-        a->b
-        return)))
+    (a->mb value)))
 
-;; (bind nil        _)           <=> nil
-;; (bind (return a) identity)    <=> (return a)
-;; (bind (return a) (fn [a] ...) <=> (return ((fn [a] ...) a))
 
-;; Samples:
-;; clj-monad-lab.monad> (bind (return nil) (fn [a] (+ 1 a)))
-;; nil
-;; clj-monad-lab.monad> (bind nil (fn [a] (+ 1 a)))
-;; nil
-;; clj-monad-lab.monad> (bind 3 (fn [a] (+ 1 a)))
-;; NullPointerException   clojure.lang.Numbers.ops (Numbers.java:942)
-;; clj-monad-lab.monad> (bind (return 10) (fn [a] (+ 1 a)))
-;; {:value 11}
-;; clj-monad-lab.monad> (bind (return 10) identity)
-;; {:value 10}
+;; (>>= nil        _)           <=> nil
+;; (>>= (return a) identity)    <=> (return a)
+;; (>>= (return a) (fn [a] ...) <=> (return ((fn [a] ...) a))
+
+
+clj-monad-lab.monad> (>>= (return 10) (comp identity return))
+{:value 10}
+clj-monad-lab.monad> (>>= (return 10) #(return (+ 100 %)))
+{:value 110}
