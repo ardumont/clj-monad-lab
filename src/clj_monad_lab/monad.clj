@@ -1,4 +1,4 @@
-(ns clj-monad-ab.monad
+(ns clj-monad-lab.monad
   "Learn to dry my understanding of monads. Implement something `'equivalent` in clojure'")
 
 ;; functor
@@ -6,10 +6,17 @@
 
 ;; Monad
 
-(defn bind "(>>=) :: Monad m => m a -> (a -> m b) -> m b"
-  [{:keys [maybe-a]} a->b]
-  (return (a->b maybe-a))  )
-
 (defn return "a -> m a"
   [a]
-  {:maybe a})
+  (when a {:value a}))
+
+(defn bind "(>>=) :: Monad m => m a -> (a -> m b) -> m b"
+  [{:keys [value] :as monad-value} a->b]
+  (when monad-value
+    (-> value
+        a->b
+        return)))
+
+;; (bind nil        _)           <=> nil
+;; (bind (return a) identity)    <=> (return a)
+;; (bind (return a) (fn [a] ...) <=> (return ((fn [a] ...) a))
