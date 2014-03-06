@@ -15,13 +15,17 @@
   (when monad-value
     (a->mb value)))
 
-
 ;; (>>= nil        _)           <=> nil
 ;; (>>= (return a) identity)    <=> (return a)
 ;; (>>= (return a) (fn [a] ...) <=> (return ((fn [a] ...) a))
 
+;; clj-monad-lab.monad> (>>= (return 10) (comp identity return))
+;; {:value 10}
+;; clj-monad-lab.monad> (>>= (return 10) #(return (+ 100 %)))
+;; {:value 110}
 
-clj-monad-lab.monad> (>>= (return 10) (comp identity return))
-{:value 10}
-clj-monad-lab.monad> (>>= (return 10) #(return (+ 100 %)))
-{:value 110}
+;; clj-monad-lab.monad> (>>= (>>= (>>= {:value 10} #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %)))
+;; {:value -11}
+
+;; it would be better in infix notation
+;; {:value 10} >>= #(return (* 2 %)) >>= #(return (+ 1 %)) >>= #(return (- 10 %))
