@@ -20,3 +20,15 @@
 ;; (bind nil        _)           <=> nil
 ;; (bind (return a) identity)    <=> (return a)
 ;; (bind (return a) (fn [a] ...) <=> (return ((fn [a] ...) a))
+
+;; Samples:
+;; clj-monad-lab.monad> (bind (return nil) (fn [a] (+ 1 a)))
+;; nil
+;; clj-monad-lab.monad> (bind nil (fn [a] (+ 1 a)))
+;; nil
+;; clj-monad-lab.monad> (bind 3 (fn [a] (+ 1 a)))
+;; NullPointerException   clojure.lang.Numbers.ops (Numbers.java:942)
+;; clj-monad-lab.monad> (bind (return 10) (fn [a] (+ 1 a)))
+;; {:value 11}
+;; clj-monad-lab.monad> (bind (return 10) identity)
+;; {:value 10}
