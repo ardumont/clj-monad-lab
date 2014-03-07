@@ -8,7 +8,7 @@
 
 (defn return "a -> m a"
   [a]
-  (when a {:value a}))
+  {:value a})
 
 (defn fail "Deal with failure"
   [msg]
