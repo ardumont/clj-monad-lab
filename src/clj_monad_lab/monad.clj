@@ -10,10 +10,14 @@
   [a]
   (when a {:value a}))
 
+(defn fail "Deal with failure"
+  [msg]
+  (return msg))
+
 (defn >>= "Monad m => m a -> (a -> m b) -> m b"
   [{:keys [value] :as monad-value} a->mb]
-  (when monad-value
-    (a->mb value)))
+  (try (when monad-value (a->mb value))
+       (catch java.lang.Exception e (fail "Error"))))
 
 ;; (>>= nil        _)           <=> nil
 ;; (>>= (return a) identity)    <=> (return a)
@@ -35,3 +39,6 @@
 
 ;; clj-monad-lab.monad> (>>= (>>= (>>= {:value 10} #(return (* 2 %))) (constantly nil)) #(return (- 10 %)))
 ;; nil
+
+;; clj-monad-lab.monad> (>>= (>>= (>>= {:value 10} #(return (* 2 %))) (fn [_] (/ 1 0))) #(return (- 10 %)))
+;; {:value "Error"}
