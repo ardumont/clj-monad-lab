@@ -31,9 +31,6 @@
       (try (catch java.lang.Exception e (fail (format "Error: %s" (.getMessage e)))))))
 
 ;; value
-(t/expect 10
-          ((>>= (return 10) (comp return identity))))
-
 (t/expect 110
           ((>>= (return 10) #(return (+ 100 %)))))
 
