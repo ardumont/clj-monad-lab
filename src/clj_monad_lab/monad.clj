@@ -35,17 +35,18 @@
           ((>>= (return 10) #(return (+ 100 %)))))
 
 (t/expect -11
-          ((>>= (>>= (>>= (return 10) #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %)))))
-
-;; nil
-;; (t/expect nil
-;;           ((>>= (>>= (>>= (return nil) #(* 2 %)) #(+ 1 %)) #(- 10 %))))
-;; (t/expect nil
-;;           ((>>= (>>= (>>= nil #(* 2 %)) #(+ 1 %)) #(- 10 %))))
+          ((-> (return 10)
+                (>>= #(return (* 2 %)))
+                (>>= #(return (+ 1 %)))
+                (>>= #(return (- 10 %))))))
 
 ;; exception
 (t/expect "Error: null"
-          ((>>= (>>= (>>= nil #(return (* 2 %))) (constantly nil)) #(return (- 10 %)))))
+          ((-> (return 10)
+                (>>= #(return (* 2 %)))
+                (>>= (constantly nil))
+                (>>= #(return (- 10 %))))))
 
 (t/expect "Error: some dummy error"
-          ((>>= (return 10) (fn [a] (throw (java.lang.NullPointerException. "some dummy error"))))))
+          ((-> (return 10)
+                (>>= (fn [a] (throw (java.lang.NullPointerException. "some dummy error")))))))
