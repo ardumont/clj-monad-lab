@@ -1,5 +1,5 @@
 (ns clj-monad-lab.monad
-  "Learn to dry my understanding of monads. Implement something `'equivalent` in clojure'"
+  "Monads tryout. Implement something `'equivalent` in clojure'"
   (:require [expectations :as t]))
 
 ;; functor
