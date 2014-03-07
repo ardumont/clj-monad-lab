@@ -25,9 +25,9 @@
 (t/expect "Error message" ((fail "Error message")))
 
 (defn >>= "Monad m => m a -> (a -> m b) -> m b"
-  [monad-value a->mb]
+  [monad-value fn]
   (-> (monad-value)
-      a->mb
+      fn
       (try (catch java.lang.Exception e (fail (format "Error: %s" (.getMessage e)))))))
 
 ;; value
