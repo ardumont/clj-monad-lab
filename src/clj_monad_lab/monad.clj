@@ -29,3 +29,9 @@
 
 ;; it would be better in infix notation
 ;; {:value 10} >>= #(return (* 2 %)) >>= #(return (+ 1 %)) >>= #(return (- 10 %))
+
+;; clj-monad-lab.monad> (>>= (>>= (>>= nil #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %)))
+;; nil
+
+;; clj-monad-lab.monad> (>>= (>>= (>>= {:value 10} #(return (* 2 %))) (constantly nil)) #(return (- 10 %)))
+;; nil
