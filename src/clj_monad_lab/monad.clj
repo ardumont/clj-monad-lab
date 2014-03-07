@@ -13,40 +13,42 @@
 
 (defn return "a -> m a"
   [a]
-  {:value a})
+  (fn [] a))
 
-(t/expect {:value 10} (return 10))
-(t/expect {:value [1 2 3]} (return [1 2 3]))
+(t/expect 10      ((return 10)))
+(t/expect [1 2 3] ((return [1 2 3])))
 
 (defn fail "Deal with failure"
   [msg]
   (return msg))
 
-(t/expect {:value "error message"} (fail "error message"))
+(t/expect "Error message" ((fail "Error message")))
 
 (defn >>= "Monad m => m a -> (a -> m b) -> m b"
-  [{:keys [value] :as monad-value} a->mb]
-  (try (when monad-value (a->mb value))
-       (catch java.lang.Exception e (fail "Error"))))
+  [monad-value a->mb]
+  (-> (monad-value)
+      a->mb
+      (try (catch java.lang.Exception e (fail (format "Error: %s" (.getMessage e)))))))
 
 ;; value
-(t/expect {:value 10}
-          (>>= (return 10) (comp identity return)))
+(t/expect 10
+          ((>>= (return 10) (comp return identity))))
 
-(t/expect {:value 110}
-          (>>= (return 10) #(return (+ 100 %))))
+(t/expect 110
+          ((>>= (return 10) #(return (+ 100 %)))))
 
-(t/expect {:value -11}
-          (>>= (>>= (>>= {:value 10} #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %))))
+(t/expect -11
+          ((>>= (>>= (>>= (return 10) #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %)))))
 
 ;; nil
-(t/expect nil
-          (>>= (>>= (>>= nil #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %))))
-(t/expect nil
-          (>>= (>>= (>>= nil #(return (* 2 %))) #(return (+ 1 %))) #(return (- 10 %))))
+;; (t/expect nil
+;;           ((>>= (>>= (>>= (return nil) #(* 2 %)) #(+ 1 %)) #(- 10 %))))
+;; (t/expect nil
+;;           ((>>= (>>= (>>= nil #(* 2 %)) #(+ 1 %)) #(- 10 %))))
 
 ;; exception
-(t/expect nil
-          (>>= (>>= (>>= {:value 10} #(return (* 2 %))) (constantly nil)) #(return (- 10 %))))
+(t/expect "Error: null"
+          ((>>= (>>= (>>= nil #(return (* 2 %))) (constantly nil)) #(return (- 10 %)))))
 
-(t/expect {:value "Error"} (>>= (>>= (>>= {:value 10} #(return (* 2 %))) (fn [_] (/ 1 0))) #(return (- 10 %))))
+(t/expect "Error: some dummy error"
+          ((>>= (return 10) (fn [a] (throw (java.lang.NullPointerException. "some dummy error"))))))
