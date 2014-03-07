@@ -36,9 +36,9 @@
 
 (t/expect -11
           ((-> (return 10)
-                (>>= #(return (* 2 %)))
-                (>>= #(return (+ 1 %)))
-                (>>= #(return (- 10 %))))))
+               (>>= #(return (* 2 %)))
+               (>>= #(return (+ 1 %)))
+               (>>= #(return (- 10 %))))))
 
 ;; exception
 (t/expect "Error: null"
